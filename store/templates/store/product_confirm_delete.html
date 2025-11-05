@@ -1,0 +1,30 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Удалить товар - Магазин{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <h1>Удалить товар</h1>
+    
+    <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px;">
+        <p style="font-size: 1.1rem; margin-bottom: 20px;">
+            Вы уверены, что хотите удалить товар <strong>"{{ product.name }}"</strong>?
+        </p>
+        <p style="color: #666; margin-bottom: 30px;">
+            Это действие нельзя отменить.
+        </p>
+    </div>
+    
+    <form method="post" style="display: flex; gap: 10px;">
+        {% csrf_token %}
+        <button type="submit" style="flex: 1; padding: 12px; background: #dc3545; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer;">
+            Да, удалить
+        </button>
+        <a href="{% url 'store:product_detail' product.id %}" 
+           style="flex: 1; padding: 12px; background: #ccc; color: #333; text-align: center; text-decoration: none; border-radius: 4px; font-size: 16px;">
+            Отмена
+        </a>
+    </form>
+</div>
+{% endblock %}
+

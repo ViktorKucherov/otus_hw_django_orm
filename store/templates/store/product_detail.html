@@ -9,10 +9,17 @@
     <div style="background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
             <h1 style="color: #333; margin-bottom: 10px;">{{ product.name }}</h1>
-            <a href="{% url 'store:product_edit' product.id %}" 
-               style="padding: 10px 20px; background: #667eea; color: white; text-decoration: none; border-radius: 4px;">
-                Редактировать
-            </a>
+            <div style="display: flex; gap: 10px;">
+                <a href="{% url 'store:product_edit' product.id %}" 
+                   style="padding: 10px 20px; background: #667eea; color: white; text-decoration: none; border-radius: 4px;">
+                    Редактировать
+                </a>
+                <a href="{% url 'store:product_delete' product.id %}" 
+                   style="padding: 10px 20px; background: #dc3545; color: white; text-decoration: none; border-radius: 4px;"
+                   onclick="return confirm('Вы уверены, что хотите удалить этот товар?')">
+                    Удалить
+                </a>
+            </div>
         </div>
         <div style="color: #667eea; font-size: 1.2rem; margin-bottom: 20px;">
             <a href="{% url 'store:category_detail' product.category.id %}" style="color: #667eea; text-decoration: none;">
