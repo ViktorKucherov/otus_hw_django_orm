@@ -85,8 +85,6 @@ class ProductAdmin(admin.ModelAdmin):
         }),
     )
     
-    actions = ['make_expensive', 'make_cheap']
-    
     def formatted_price(self, obj):
         """Форматированная цена с символом рубля."""
         return format_html(
@@ -106,17 +104,33 @@ class ProductAdmin(admin.ModelAdmin):
     is_recent.short_description = 'Статус'
     is_recent.boolean = True
     
+    @admin.action(description='Увеличить цену на 10%%')
     def make_expensive(self, request, queryset):
         """Действие: увеличить цену на 10%."""
         from django.db.models import F
         updated = queryset.update(price=F('price') * 1.1)
         self.message_user(request, f'Цена увеличена на 10% для {updated} товаров.')
-    make_expensive.short_description = 'Увеличить цену на 10%%'
     
+    @admin.action(description='Уменьшить цену на 10%%')
     def make_cheap(self, request, queryset):
         """Действие: уменьшить цену на 10%."""
         from django.db.models import F
         updated = queryset.update(price=F('price') * 0.9)
         self.message_user(request, f'Цена уменьшена на 10% для {updated} товаров.')
-    make_cheap.short_description = 'Уменьшить цену на 10%%'
+    
+    @admin.action(description='Увеличить цену на 20%%')
+    def make_very_expensive(self, request, queryset):
+        """Действие: увеличить цену на 20%."""
+        from django.db.models import F
+        updated = queryset.update(price=F('price') * 1.2)
+        self.message_user(request, f'Цена увеличена на 20% для {updated} товаров.')
+    
+    @admin.action(description='Сбросить цену до 1000 ₽')
+    def reset_price(self, request, queryset):
+        """Действие: установить цену 1000 ₽."""
+        from decimal import Decimal
+        updated = queryset.update(price=Decimal('1000.00'))
+        self.message_user(request, f'Цена установлена в 1000 ₽ для {updated} товаров.')
+    
+    actions = [make_expensive, make_cheap, make_very_expensive, reset_price]
 

@@ -1,0 +1,34 @@
+{% extends 'store/base.html' %}
+
+{% block title %}{{ category.name }} - Магазин{% endblock %}
+
+{% block content %}
+<h1>{{ category.name }}</h1>
+{% if category.description %}
+<p>{{ category.description }}</p>
+{% endif %}
+
+{% if products %}
+    <div class="products-grid">
+        {% for product in products %}
+        <div class="product-card">
+            <a href="{% url 'store:product_detail' product.id %}">
+                <div class="product-info">
+                    <div class="product-name">{{ product.name }}</div>
+                    <div class="product-price">{{ product.price }} ₽</div>
+                    {% if product.description %}
+                    <div class="product-description">{{ product.description }}</div>
+                    {% endif %}
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        <h2>В этой категории пока нет товаров</h2>
+    </div>
+{% endif %}
+{% endblock %}
+
+
