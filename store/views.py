@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from django.shortcuts import render, get_object_or_404
 from .models import Category, Product
 from .forms import ProductForm
+from .tasks import log_new_product
 
 
 class ProductListView(ListView):
@@ -77,8 +78,11 @@ class ProductCreateView(CreateView):
     
     def form_valid(self, form):
         """Обработка успешной валидации формы."""
+        response = super().form_valid(form)
         messages.success(self.request, f'Товар "{form.instance.name}" успешно добавлен!')
-        return super().form_valid(form)
+        # Запуск фоновой задачи Celery для логирования
+        log_new_product.delay(self.object.id)
+        return response
     
     def get_success_url(self):
         """URL для перенаправления после успешного создания."""

@@ -1,0 +1,8 @@
+services:
+  web:
+    environment:
+      - DEBUG=True
+
+  celery:
+    command: celery -A config worker --loglevel=info --concurrency=4
+

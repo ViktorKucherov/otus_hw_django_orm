@@ -12,6 +12,59 @@
 
 ## Установка
 
+### Вариант 1: Docker Compose (рекомендуется)
+
+Проект настроен с Docker Compose, разделен на слои:
+- **Redis** - отдельный сервис для брокера задач
+- **Web** - Django веб-приложение
+- **Celery** - отдельный worker для фоновых задач
+
+1. Создайте файл `.env` (можно скопировать из `.env.example`):
+```bash
+cp .env.example .env
+```
+
+2. Запустите все сервисы:
+```bash
+docker-compose up -d
+```
+
+3. Примените миграции и создайте суперпользователя:
+```bash
+docker-compose exec web python manage.py migrate
+docker-compose exec web python manage.py createsuperuser
+```
+
+4. Создайте тестовые данные:
+```bash
+docker-compose exec web python manage.py create_data
+```
+
+5. Откройте в браузере:
+   - Приложение: http://localhost:8000
+   - Админка: http://localhost:8000/admin
+
+**Управление сервисами:**
+```bash
+# Просмотр логов
+docker-compose logs -f
+
+# Просмотр логов конкретного сервиса
+docker-compose logs -f celery
+docker-compose logs -f web
+
+# Остановка всех сервисов
+docker-compose down
+
+# Пересборка образов
+docker-compose build --no-cache
+
+# Выполнение команды в контейнере
+docker-compose exec web python manage.py shell
+```
+
+### Вариант 2: Локальная установка
+
 1. Установите зависимости:
 ```bash
 pip install -r requirements.txt
@@ -28,12 +81,109 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
-4. Запустите сервер разработки:
+4. Установите и запустите Redis:
+   - Windows: скачайте с https://github.com/microsoftarchive/redis/releases
+   - Или используйте Docker: `docker run -d -p 6379:6379 redis`
+   - Или установите через WSL
+
+5. Запустите Celery worker (в отдельном терминале):
+```bash
+celery -A config worker --loglevel=info
+```
+
+6. Запустите сервер разработки:
 ```bash
 python manage.py runserver
 ```
 
 ## Использование
+
+### Celery и фоновые задачи
+
+При добавлении нового товара через форму автоматически запускается фоновая задача Celery, которая логирует информацию о товаре в консоль.
+
+**Пошаговая инструкция для проверки Celery:**
+
+#### Шаг 1: Установка и запуск Redis
+
+Если у вас Windows, самый простой способ - использовать Docker:
+```bash
+docker run -d -p 6379:6379 redis
+```
+
+Или установите Redis для Windows из официального репозитория.
+
+#### Шаг 2: Запуск Celery Worker
+
+Откройте **новый терминал** (не закрывая Django сервер) и выполните:
+```bash
+celery -A config worker --loglevel=info
+```
+
+Вы должны увидеть сообщение типа:
+```
+celery@hostname v5.3.0 (singularity)
+
+[tasks]
+  . store.tasks.log_new_product
+
+[INFO/MainProcess] Connected to redis://localhost:6379/0
+[INFO/MainProcess] celery@hostname ready.
+```
+
+#### Шаг 3: Проверка работы
+
+**Способ 1: Через команду тестирования**
+```bash
+python manage.py test_celery
+```
+
+Эта команда запустит задачу для последнего товара в базе и покажет результат.
+
+**Способ 2: Через веб-интерфейс**
+1. Убедитесь, что Django сервер запущен: `python manage.py runserver`
+2. Убедитесь, что Celery worker запущен (Шаг 2)
+3. Откройте в браузере: http://127.0.0.1:8000/product/create/
+4. Добавьте новый товар через форму
+5. В консоли Celery worker вы увидите логи:
+```
+======================================================================
+НОВЫЙ ТОВАР ДОБАВЛЕН В МАГАЗИН
+======================================================================
+ID товара: 1
+Название: Название товара
+Категория: Категория
+Цена: 1000.00 руб.
+Дата создания: 2025-11-05 19:30:00
+======================================================================
+```
+
+#### Проверка логов
+
+Логи также сохраняются в файл `logs/celery.log`. Проверьте его содержимое:
+```bash
+type logs\celery.log
+```
+
+#### Что проверить, если не работает:
+
+1. **Redis не запущен** - проверьте подключение:
+   ```bash
+   redis-cli ping
+   ```
+   Должен вернуть `PONG`
+
+2. **Worker не запущен** - запустите в отдельном терминале:
+   ```bash
+   celery -A config worker --loglevel=info
+   ```
+
+3. **Задачи не выполняются** - проверьте, что Redis доступен:
+   ```bash
+   python manage.py shell
+   >>> from config.celery import app
+   >>> app.control.inspect().active()
+   ```
 
 ### Создание данных через кастомную команду
 

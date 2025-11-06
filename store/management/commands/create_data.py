@@ -19,27 +19,27 @@ class Command(BaseCommand):
             defaults={'description': 'Электронные устройства и гаджеты'}
         )
         if created:
-            self.stdout.write(self.style.SUCCESS(f'✓ Создана категория: {category1.name}'))
+            self.stdout.write(self.style.SUCCESS(f'Создана категория: {category1.name}'))
         else:
-            self.stdout.write(self.style.WARNING(f'→ Категория уже существует: {category1.name}'))
+            self.stdout.write(self.style.WARNING(f'Категория уже существует: {category1.name}'))
 
         category2, created = Category.objects.get_or_create(
             name='Одежда',
             defaults={'description': 'Одежда и аксессуары'}
         )
         if created:
-            self.stdout.write(self.style.SUCCESS(f'✓ Создана категория: {category2.name}'))
+            self.stdout.write(self.style.SUCCESS(f'Создана категория: {category2.name}'))
         else:
-            self.stdout.write(self.style.WARNING(f'→ Категория уже существует: {category2.name}'))
+            self.stdout.write(self.style.WARNING(f'Категория уже существует: {category2.name}'))
 
         category3, created = Category.objects.get_or_create(
             name='Книги',
             defaults={'description': 'Книги и литература'}
         )
         if created:
-            self.stdout.write(self.style.SUCCESS(f'✓ Создана категория: {category3.name}'))
+            self.stdout.write(self.style.SUCCESS(f'Создана категория: {category3.name}'))
         else:
-            self.stdout.write(self.style.WARNING(f'→ Категория уже существует: {category3.name}'))
+            self.stdout.write(self.style.WARNING(f'Категория уже существует: {category3.name}'))
 
         # Создание товаров
         products_data = [
@@ -94,12 +94,12 @@ class Command(BaseCommand):
             )
             if created:
                 created_count += 1
-                self.stdout.write(self.style.SUCCESS(f'✓ Создан товар: {product.name}'))
+                self.stdout.write(self.style.SUCCESS(f'Создан товар: {product.name}'))
             else:
-                self.stdout.write(self.style.WARNING(f'→ Товар уже существует: {product.name}'))
+                self.stdout.write(self.style.WARNING(f'Товар уже существует: {product.name}'))
 
         self.stdout.write(self.style.SUCCESS(
-            f'\n✓ Готово! Создано товаров: {created_count}'
+            f'\nГотово! Создано товаров: {created_count}'
         ))
         self.stdout.write(self.style.SUCCESS(
             f'Всего категорий: {Category.objects.count()}'

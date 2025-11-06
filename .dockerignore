@@ -4,6 +4,9 @@ __pycache__/
 *$py.class
 *.so
 .Python
+env/
+venv/
+ENV/
 build/
 develop-eggs/
 dist/
@@ -28,19 +31,9 @@ db.sqlite3-journal
 /media
 /staticfiles
 
-# Logs
-logs/*.log
-!logs/.gitkeep
-
-# Virtual Environment
-venv/
-env/
-ENV/
-.venv
-
 # IDE
-.idea/
 .vscode/
+.idea/
 *.swp
 *.swo
 *~
@@ -49,8 +42,27 @@ ENV/
 .DS_Store
 Thumbs.db
 
+# Git
+.git/
+.gitignore
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# Документация
+*.md
+!README.md
+
+# Тесты
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Логи (будут создаваться в контейнере)
+logs/
+*.log
+
 # Environment
 .env
 .env.local
-.docker-compose.override.yml
-

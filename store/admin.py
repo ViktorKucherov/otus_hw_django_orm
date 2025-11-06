@@ -99,8 +99,8 @@ class ProductAdmin(admin.ModelAdmin):
         from datetime import timedelta
         recent = timezone.now() - timedelta(days=7)
         if obj.created_at >= recent:
-            return format_html('<span style="color: green;">✓ Новый</span>')
-        return format_html('<span style="color: gray;">—</span>')
+            return format_html('<span style="color: green;">Новый</span>')
+        return format_html('<span style="color: gray;">-</span>')
     is_recent.short_description = 'Статус'
     is_recent.boolean = True
     
